@@ -1,0 +1,80 @@
+## Resumo de Camada de Enlace
+
+- Problemas para a Camada de Enlace
+    - Erros nos circuitos
+    - Atrasos
+    - Taxa de transmissao real finita
+    - Distorcao de sinal
+    - Reconhecimento de destino
+
+- Objetivo
+    - Comunicacao confiavel entre dois dispositivos adjacentes
+    - Cria quadros para transporte da info
+    - Enquadramento (estabelece limites de um quadro)  
+        - A camada fisica somente garante o envio dos bits
+        - Para detectar erro e controlar o fluxo, a camada de rede agrupa os bits em quadros
+        - Cabe a camada de enlace saber onde comeca e termina um quadro
+        - Como delimita os quadros?
+            - Contagem de caracteres
+            - Insercao de bytes especiais
+            - Insercao de bits especiais ( Caracter Stuffing PPP ou Bit Stuffing HDLC)
+            - Uso de campos de controle
+    - Estabelece comuinicao e gerencia o link desta
+    - Criacao do quadro
+        - Camada de Rede -> Camada de Enlace
+    
+- Controle de fluxo
+    - Assegura que o receptor nao seja sobrecarregado
+
+- Controle de Erros
+    - Opcao comum e pedir a retransmissao do quadro
+    - Quadro inutil quando teve bits alterados
+        - Checagem de paridade (maneira mais simples de detectar erros)
+        - Codigo Polinomial (CRC)
+            - Divisao de polinomios
+            - Resto da divisao e anexado ao quadro
+            - Receptor divide o quadro pelo mesmo polinomio
+            - Se o resto for zero, o quadro esta correto
+        - Stop-and-Wait
+            - Quadro e enviado e espera o reconhecimento
+            - Se nao receber, reenvia
+            - Piggyback 
+                - Envia o reconhecimento junto com o quadro no cabeçalho
+        - Mecanismo de Controle ( ARQ - Automatic Repeat reQuest)
+            - Stop-and-Wait
+            - Go-Back-N
+            - Repeticao Seletiva
+    
+- Protocolo de Janela Deslizante
+    - Numero de Sequencia
+        - Indica a ordem dos quadros
+    - Janela de Transmissao
+        - Quadros que podem ser enviados sem esperar por um reconhecimento
+    - Janela de Recebimento
+        - Quadros que podem ser recebidos sem esperar por um reconhecimento
+    -   Tamanho da Janela de Recepção = 1
+        - Numero max de quadros que pode receber antes do envio de uma confirmacao ao transmissor
+    -As janelas de recepcao e transmissao nao necessariamente tem o mesmo tamanho
+    - Os numeros de seq que estao na janela de recepcao sao os quadros que o destino recebeu mas nao confirmou
+    - Qualquer quadro recebido com a numeracao fora da janela de recepcao e descartado
+    - Janela maior aumenta a eficiencia quando o atrazo de propagacao e grande
+    - Pipelining : Envia varios quadros antes de receber o reconhecimento
+    - Controle de erros:    
+        - Go-Back-N: perde a retransmissao de todos os quadros desde numero N
+        - Repeticao Seletiva: perde a retransmissao do quadro que nao chegaram e aproveita os que chegaram
+
+- Redes Ponto-a-Ponto
+    - HDLC 
+        - Define estações primárias (envia comandos), secundárias (responde a comandos) e combinadas (dupla função)
+        - Preambulo (fixos no inicio e fim)
+        - Endereco ( quando existem multiplos terminais)
+        - Controle de fluxo e erros
+        - Checksum
+    - SLIP
+        - São enviados pacotes IP delimitados por um caracter especial (flag byte)
+    - PPP
+        - Envio de datagramas sobre links ponto a ponto
+        - Oferece encapsulamento sincrono e assincrono, compressao de cabecalho e autenticacao
+        - Formato: Byte Flag, Endereco, Controle, Protocolo, Checksum
+        - Compoentes basicos: LCP ( Link Control Protocol ) e NCP (Network Control Protocol)
+    - SDLC
